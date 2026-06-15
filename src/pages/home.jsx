@@ -10,8 +10,6 @@ function Home() {
 
     const [produtos, setProdutos] = useState([])
 
-
-
     const [nome, setNome] = useState("");
     const [preco, setPreco] = useState("");
     const [descricao, setDescricao] = useState("");
@@ -49,26 +47,45 @@ function Home() {
     }, []);
 
     //aqui mostra a tela de carregando
-  if (loading) {
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-200 text-center">
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-gray-100">
+                <div className="bg-white p-6 rounded-2xl shadow-md border border-gray-200 text-center">
 
-        <h1 className="text-lg font-semibold text-gray-700 mb-4">
-          Carregando produtos, por favor aguarde...
-        </h1>
+                    <h1 className="text-lg font-semibold text-gray-700 mb-4">
+                        Carregando produtos, por favor aguarde...
+                    </h1>
 
-        {/* Spinner simples */}
-        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                    {/* Spinner simples */}
+                    <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
 
-      </div>
-    </div>
-  );
-}
+                </div>
+            </div>
+
+        );
+    }
+
+
+    {/* aqui estou pegando o produto e filtrando aquele que o ID for compativel com o selecionado */ }
+
+    function removerProduto(id) {
+        setProdutos(
+            produtos.filter(produto => produto.id !== id)
+        );
+    }
+  console.log(produtos)
 
 
 
-  return (
+    function concluido(id) {
+        setProdutos(
+            produtos.map(produto => produto.id === id ? { ...produto, concluido: !produto.concluido}:{...produto})
+        )   
+    }
+
+
+
+    return (
         <div className="min-h-screen bg-gray-100 p-4">
 
             {/* FORMULÁRIO */}
@@ -125,15 +142,22 @@ function Home() {
                 {produtos.map(produto => (
                     <ProdutoCard
                         key={produto.id}
+                        id={produto.id}
                         nome={produto.nome}
                         descricao={produto.descricao}
                         preco={produto.preco}
+                        removerProduto={removerProduto}
+                        marcarConcluido={concluido}
+                       concluido={produto.concluido}
+
                     />
                 ))}
+                
 
             </div>
 
         </div>
+
     );
 }
 
