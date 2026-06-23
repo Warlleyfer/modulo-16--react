@@ -1,51 +1,46 @@
 import { useEffect, useState } from "react";
 import ProdutoCard from "../components/produtoCard";
-
+import { useProdutos } from "../hooks/useProdutos";
 
 
 
 
 //lista inicial
 function Home() {
-
-    const [produtos, setProdutos] = useState([])
- const [filtro, setFiltro] = useState("todas");
+    const {
+        filtro,
+        setFiltro,
+        adicionaProduto,
+        removerProduto,
+        alterarConcluido,
+        produtosFiltrados,
+    } = useProdutos();
 
     const [nome, setNome] = useState("");
     const [preco, setPreco] = useState("");
     const [descricao, setDescricao] = useState("");
 
-
-
     const handleSubmit = (e) => {
         e.preventDefault();
-        const novoProduto = {
-            id: Date.now(),
-            nome,
-            preco,
-            descricao,
-            concluido:"false"
-        };
-        setProdutos([...produtos, novoProduto]);
+
+        adicionaProduto(nome,descricao ,preco);
         setNome("");
-        setPreco("");
         setDescricao("");
-    };
+        setPreco("");
+    }
 
     // aqui fica a tela de carregar
 
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setTimeout(() => {
-            setProdutos([
-                { id: 1, nome: "Mouse", preco: 50, descricao: "Mouse gamer"  ,concluido: "false"},
-                { id: 2, nome: "Teclado", preco: 100, descricao: "Teclado mecânico",concluido:"false" }]);
+        const timer = setTimeout(() => {
 
             setLoading(false);
 
 
-        }, 3000, []);
+        }, 3000);
+        return () => clearTimeout(timer);
     }, []);
 
     //aqui mostra a tela de carregando
@@ -68,91 +63,47 @@ function Home() {
     }
 
 
-    {/* aqui estou pegando o produto e filtrando aquele que o ID for compativel com o selecionado */ }
-
-    function removerProduto(id) {
-        setProdutos(
-            produtos.filter(produto => produto.id !== id)
-        );
-    }
-    console.log(produtos)
-
-
-
-    function concluido(id) {
-        setProdutos(
-            produtos.map(produto => produto.id === id ? { ...produto, concluido: !produto.concluido } : produto)
-        )
-    }
-
-   
-    const produtosFiltrados = produtos.filter(produto => {
-        if (filtro === "pendentes") {
-            return !produto.concluido;
-        }
-
-        if (filtro === "concluidas") {
-            return produto.concluido;
-        }
-
-        return true;
-    });
-
-
-
-
-
     return (
         <div className="min-h-screen bg-gray-100 p-4">
-
-
-   
-
-
-
-            {/* FORMULÁRIO */}
             <div className="flex justify-center mt-10">
-
-
-                
                 <form
                     onSubmit={handleSubmit}
                     className="bg-white p-6 rounded-2xl shadow-md border border-gray-200 w-full max-w-md flex flex-col gap-4"
                 >
-<div className="flex justify-center gap-3 mb-6">
-  <button
-    onClick={() => setFiltro("todas")}
-    className={`px-4 py-2 rounded-lg font-medium transition ${
-      filtro === "todas"
-        ? "bg-blue-500 text-white shadow-md"
-        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-    }`}
-  >
-    Todas
-  </button>
+                    <div className="flex justify-center gap-3 mb-6">
+                        <button
+                            type="button"
+                            onClick={() => setFiltro("todas")}
+                            className={`px-4 py-2 rounded-lg font-medium transition ${filtro === "todas"
+                                ? "bg-blue-500 text-white shadow-md"
+                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                }`}
+                        >
+                            Todas
+                        </button>
 
-  <button
-    onClick={() => setFiltro("pendentes")}
-    className={`px-4 py-2 rounded-lg font-medium transition ${
-      filtro === "pendentes"
-        ? "bg-yellow-500 text-white shadow-md"
-        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-    }`}
-  >
-    Pendentes
-  </button>
+                        <button
+                            type="button"
+                            onClick={() => setFiltro("pendentes")}
+                            className={`px-4 py-2 rounded-lg font-medium transition ${filtro === "pendentes"
+                                ? "bg-yellow-500 text-white shadow-md"
+                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                }`}
+                        >
+                            Pendentes
+                        </button>
 
-  <button
-    onClick={() => setFiltro("concluidas")}
-    className={`px-4 py-2 rounded-lg font-medium transition ${
-      filtro === "concluidas"
-        ? "bg-green-500 text-white shadow-md"
-        : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-    }`}
-  >
-    Concluídas
-  </button>
-</div>
+                        <button
+                            type="button"
+                            onClick={() => setFiltro("concluidas")}
+                            className={`px-4 py-2 rounded-lg font-medium transition ${filtro === "concluidas"
+                                ? "bg-green-500 text-white shadow-md"
+                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                }`}
+                        >
+                            Concluídas
+                        </button>
+                    </div>
 
                     <h2 className="text-xl font-bold text-gray-800 text-center">
                         Adicionar Produto
@@ -207,7 +158,7 @@ function Home() {
                         descricao={produto.descricao}
                         preco={produto.preco}
                         removerProduto={removerProduto}
-                        marcarConcluido={concluido}
+                        marcarConcluido={alterarConcluido}
                         concluido={produto.concluido}
 
                     />
